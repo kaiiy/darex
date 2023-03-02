@@ -1,0 +1,25 @@
+version: 3
+
+# silent: true
+
+vars:
+  FUNCTION_NAME: darex-service
+
+tasks:
+  _clean:
+    cmds:
+      - rm -r dist/*
+  _zip:
+    dir: dist
+    cmds:
+      - zip index.zip index.js > /dev/null
+  build:
+    cmds:
+      - task _clean
+      - yarn build
+      - task _zip
+  deploy:
+    dir: "dist"
+    cmds:
+      - "aws lambda update-function-code --function-name {{ .FUNCTION_NAME }} --zip-file fileb://index.zip"
+  
