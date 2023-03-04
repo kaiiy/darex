@@ -15,11 +15,12 @@ tasks:
       - zip index.zip index.js > /dev/null
   build:
     cmds:
-      - task _clean
+      - mkdir -p dist/
+      # - task _clean :
       - yarn build
       - task _zip
   deploy:
-    dir: "dist"
+    dir: dist
     cmds:
       - "aws lambda update-function-code --function-name {{ .FUNCTION_NAME }} --zip-file fileb://index.zip"
   
