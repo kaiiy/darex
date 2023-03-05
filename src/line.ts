@@ -1,4 +1,6 @@
 import { ClientConfig, MiddlewareConfig } from '@line/bot-sdk'
+import { StatusCodes } from 'http-status-codes';
+
 
 export const createConfig = (
     token: string | undefined,
@@ -7,7 +9,7 @@ export const createConfig = (
     const clientConfig: ClientConfig = { channelAccessToken: "" }
     const middlewareConfig: MiddlewareConfig = { channelSecret: "" }
 
-    if (!token || !secret) throw Error()
+    if (!token || !secret) throw Error(StatusCodes.FORBIDDEN.toString())
 
     clientConfig.channelAccessToken = token
     middlewareConfig.channelSecret = secret
