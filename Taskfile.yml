@@ -22,5 +22,5 @@ tasks:
   deploy:
     dir: dist
     cmds:
+      - task build
       - "aws lambda update-function-code --function-name {{ .FUNCTION_NAME }} --zip-file fileb://index.zip"
-  

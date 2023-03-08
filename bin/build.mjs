@@ -14,6 +14,7 @@ const options = {
     target: "node18",
     platform: "node",
     format: "esm",
+    sourcemap: true
 };
 
 
