@@ -1,33 +1,42 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
 import { validateSignature, Client, WebhookEvent } from '@line/bot-sdk'
-import { createConfig } from './line';
+import { createConfig, replyMessage } from './line';
 import { StatusCodes } from 'http-status-codes';
 
-const accessToken = process.env.CHANNEL_ACCESS_TOKEN;
-const channelSecret = process.env.CHANNEL_SECRET;
+const forbiddenResponse: ProxyResult = { statusCode: StatusCodes.FORBIDDEN, body: "" }
 
-const [clientConfig, middlewareConfig]
-    = createConfig(accessToken, channelSecret)
-const client = new Client(clientConfig);
+// TODO 
+const isWebhookEvent = (event: unknown): event is WebhookEvent[] => {
+    return true
+}
 
-export const handler = async (event: APIGatewayEvent, _: Context) => {
-    console.log("headers", event.headers)
-    console.log("body", event.body)
+export const handler = async (event: APIGatewayEvent, _: Context): Promise<ProxyResult> => {
+    const accessToken = process.env.CHANNEL_ACCESS_TOKEN;
+    const channelSecret = process.env.CHANNEL_SECRET;
+    if (!accessToken || !channelSecret) return forbiddenResponse
+
+    const [clientConfig, middlewareConfig]
+        = createConfig(accessToken, channelSecret)
+    const client = new Client(clientConfig);
 
     // validate signature 
-    if (!event.body) throw Error(StatusCodes.FORBIDDEN.toString())
+    if (!event.body) return forbiddenResponse
     const verified = validateSignature(
         event.body,
         middlewareConfig.channelSecret,
         event.headers["x-line-signature"]!)
-    console.log("verified", verified)
-    if (!verified) throw Error(StatusCodes.FORBIDDEN.toString())
+    if (!verified) return forbiddenResponse
 
-    // console.log("verified", verified)
+    const bodyEvents = JSON.parse(event.body).events
+    if (!isWebhookEvent(bodyEvents)) return forbiddenResponse
+    const lineEvents = bodyEvents
+    // // reply all messages
+    await Promise.all(
+        lineEvents.map(async (event: WebhookEvent) => {
+            // TODO: エラー処理 
+            await replyMessage(client, event);
+        })
+    );
 
-    // TODO: body: string を lineEvents: WebhookEvent に変換する
-    // console.log("headers", event.headers)
-    // console.log("body", event.body)
-
-    return;
+    return { statusCode: StatusCodes.OK, body: "" }
 };

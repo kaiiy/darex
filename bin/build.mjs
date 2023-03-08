@@ -13,7 +13,7 @@ const options = {
     outfile: "./dist/index.js",
     target: "node18",
     platform: "node",
-    format: "esm",
+    format: "cjs",
     sourcemap: true
 };
 
