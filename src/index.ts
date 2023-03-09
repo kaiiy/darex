@@ -6,7 +6,14 @@ import { StatusCodes } from 'http-status-codes';
 const forbiddenResponse: ProxyResult = { statusCode: StatusCodes.FORBIDDEN, body: "" }
 
 // TODO 
-const isWebhookEvent = (event: unknown): event is WebhookEvent[] => {
+const isWebhookEvents = (events: unknown): events is WebhookEvent[] => {
+    if (!Array.isArray(events)) return false
+
+    for (const event of events) {
+        if (!(event instanceof Object)) return false
+        if (!("type" in event)) return false
+    }
+
     return true
 }
 
@@ -27,13 +34,13 @@ export const handler = async (event: APIGatewayEvent, _: Context): Promise<Proxy
         event.headers["x-line-signature"]!)
     if (!verified) return forbiddenResponse
 
-    const bodyEvents = JSON.parse(event.body).events
-    if (!isWebhookEvent(bodyEvents)) return forbiddenResponse
-    const lineEvents = bodyEvents
-    // // reply all messages
+    const lineEvents = JSON.parse(event.body).events
+    if (!isWebhookEvents(lineEvents)) return forbiddenResponse
+
+    // reply all messages
     await Promise.all(
         lineEvents.map(async (event: WebhookEvent) => {
-            // TODO: エラー処理 
+            // TODO: error handling
             await replyMessage(client, event);
         })
     );
