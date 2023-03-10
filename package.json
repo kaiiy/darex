@@ -5,6 +5,7 @@
     "build": "rm -rf dist && node ./bin/build.mjs",
     "test": "jest"
   },
+  "license": "MIT",
   "devDependencies": {
     "@line/bot-sdk": "^7.5.2",
     "@types/aws-lambda": "^8.10.111",
