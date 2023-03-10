@@ -3,12 +3,9 @@ version: 3
 # silent: true
 
 vars:
-  FUNCTION_NAME: darex-service
+  SERVICE_FUNCTION_NAME: darex-service
 
 tasks:
-  _clean:
-    cmds:
-      - rm -r dist/*
   _zip:
     dir: dist
     cmds:
@@ -16,11 +13,10 @@ tasks:
   build:
     cmds:
       - mkdir -p dist/
-      # - task _clean :
       - yarn build
       - task _zip
   deploy:
     dir: dist
     cmds:
       - task build
-      - "aws lambda update-function-code --function-name {{ .FUNCTION_NAME }} --zip-file fileb://index.zip"
+      - "aws lambda update-function-code --function-name {{ .SERVICE_FUNCTION_NAME }} --zip-file fileb://index.zip > ../log/service.json"

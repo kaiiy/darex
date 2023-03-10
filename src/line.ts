@@ -10,6 +10,17 @@ export const createConfig = (token: string, secret: string): [ClientConfig, Midd
     return [clientConfig, middlewareConfig]
 }
 
+export const isWebhookEvents = (events: unknown): events is WebhookEvent[] => {
+    if (!Array.isArray(events)) return false
+
+    for (const event of events) {
+        if (!(event instanceof Object)) return false
+        if (!("type" in event)) return false
+    }
+
+    return true
+}
+
 const addFriendText = "追加した"
 const gameStartText = "ゲームスタート"
 

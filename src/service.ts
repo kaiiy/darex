@@ -1,20 +1,10 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
 import { validateSignature, Client, WebhookEvent } from '@line/bot-sdk'
-import { createConfig, replyMessage } from './line';
+import { createConfig, replyMessage, isWebhookEvents } from './line';
 import { StatusCodes } from 'http-status-codes';
 
-const forbiddenResponse: ProxyResult = { statusCode: StatusCodes.FORBIDDEN, body: "" }
-
-// TODO 
-const isWebhookEvents = (events: unknown): events is WebhookEvent[] => {
-    if (!Array.isArray(events)) return false
-
-    for (const event of events) {
-        if (!(event instanceof Object)) return false
-        if (!("type" in event)) return false
-    }
-
-    return true
+const forbiddenResponse: ProxyResult = {
+    statusCode: StatusCodes.FORBIDDEN, body: ""
 }
 
 export const handler = async (event: APIGatewayEvent, _: Context): Promise<ProxyResult> => {
