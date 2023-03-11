@@ -1,6 +1,7 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
 import { validateSignature, Client, WebhookEvent } from '@line/bot-sdk'
-import { createConfig, replyMessage, isWebhookEvents } from './line';
+import { createConfig, isWebhookEvents } from './line';
+import { replyMessage } from "./service/reply"
 import { StatusCodes } from 'http-status-codes';
 
 const forbiddenResponse: ProxyResult = {
