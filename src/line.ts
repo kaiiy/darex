@@ -1,13 +1,18 @@
-import { ClientConfig, MiddlewareConfig, WebhookEvent } from '@line/bot-sdk'
+import { ClientConfig, WebhookEvent, Client } from '@line/bot-sdk'
 
-export const createConfig = (token: string, secret: string): [ClientConfig, MiddlewareConfig] => {
-    const clientConfig: ClientConfig = { channelAccessToken: "" }
-    const middlewareConfig: MiddlewareConfig = { channelSecret: "" }
+export type Key = {
+    accessToken: string,
+    channelSecret: string
+}
+export type Secrets = {
+    service: string,
+    reporter: string
+}
 
-    clientConfig.channelAccessToken = token
-    middlewareConfig.channelSecret = secret
-
-    return [clientConfig, middlewareConfig]
+export const createClient = (token: string): Client => {
+    const config: ClientConfig = { channelAccessToken: token }
+    const client = new Client(config)
+    return client
 }
 
 export const isWebhookEvents = (events: unknown): events is WebhookEvent[] => {

@@ -2,47 +2,10 @@ import { Client, WebhookEvent } from '@line/bot-sdk'
 
 const addFriendText = "追加した"
 const gameStartText = "ゲームスタート"
-const answers = {
-    q1: ["レスラー", "れすらー"],
-    q2: ["ペケ", "ぺけ"]
-}
 
-export const replyMessage = async (client: Client, reporter: Client, event: WebhookEvent) => {
+export const replyMessage = async (client: Client, service: Client, event: WebhookEvent) => {
     const userId = event.source.userId
 
-    // when followed 
-    if (event.type === "follow") {
-        await client.replyMessage(event.replyToken, [
-            {
-                type: "template",
-                altText: "アカウントを追加してください。",
-                template: {
-                    type: "buttons",
-                    title: "友達追加",
-                    text: "下のボタンからアカウントを追加してください。",
-                    actions: [
-                        {
-                            type: "uri",
-                            label: "追加する",
-                            uri: "https://line.me/R/ti/p/@152wmnqc"
-                        }
-                    ]
-                },
-                quickReply: {
-                    items: [
-                        {
-                            type: "action",
-                            action: {
-                                type: "message",
-                                label: addFriendText,
-                                text: addFriendText
-                            }
-                        }
-                    ]
-                }
-            }
-        ]);
-    }
     // accept only text
     if (event.type !== 'message' || event.message.type !== 'text') return;
 
@@ -79,7 +42,7 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
             },
             {
                 type: "text",
-                text: "問題2: x = ? (ただし、このLINE謎の存在なしに、x単体でも成立するものとします。)"
+                text: "問題2: x = ?"
             },
         ]);
 
@@ -92,18 +55,5 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
             ]);
             return
         }
-        await reporter.pushMessage(userId, [
-            {
-                type: "text",
-                text: "xxxですか?"
-            },
-        ])
-    } else if (answers.q1.includes(userText) || answers.q2.includes(userText)) {
-        await client.replyMessage(event.replyToken, [
-            {
-                type: "text",
-                text: "『誰X』クリア!!"
-            },
-        ]);
     }
 }
