@@ -2,6 +2,7 @@ import { Client, WebhookEvent } from '@line/bot-sdk'
 
 const addFriendText = "追加した"
 const gameStartText = "ゲームスタート"
+const hintText = "ヒント"
 const answers = {
     q1: ["レスラー", "れすらー"],
     q2: ["ペケ", "ぺけ"]
@@ -98,6 +99,8 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
                 text: "xxxですか?"
             },
         ])
+    } else if (userText === hintText) {
+        // todo 
     } else if (answers.q1.includes(userText) || answers.q2.includes(userText)) {
         await client.replyMessage(event.replyToken, [
             {
