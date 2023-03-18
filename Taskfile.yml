@@ -1,23 +1,26 @@
 version: 3
 
-# silent: true
+silent: true
 
 vars:
   SERVICE_FUNCTION_NAME: darex
 
 tasks:
   _zip:
-    dir: dist/service/
+    dir: dist/
     cmds:
       - zip index.zip index.js > /dev/null
   build:
     cmds:
-      - mkdir -p dist/service/
+      - mkdir -p dist/
       - yarn build
       - task _zip
   deploy:
-    dir: dist/service/
+    dir: dist/
+    vars:
+      LOG_NAME:
+        sh: date --rfc-3339='seconds' | sed 's/\s/\_/' | sed 's/+/\_/' | sed 's/\:/-/g'
     cmds:
       - task build
-      - mkdir -p ../../log/
-      - "aws lambda update-function-code --function-name {{ .SERVICE_FUNCTION_NAME }} --zip-file fileb://index.zip > ../../log/service.json"
+      - mkdir -p ../log/
+      - "aws lambda update-function-code --function-name {{ .SERVICE_FUNCTION_NAME }} --zip-file fileb://index.zip > ../log/{{ .LOG_NAME }}.json"

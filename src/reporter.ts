@@ -2,7 +2,7 @@ import { Client, WebhookEvent } from '@line/bot-sdk'
 
 const reactionTexts = ["ええ。", "ええ"]
 
-export const replyMessage = async (client: Client, service: Client, event: WebhookEvent) => {
+export const replyMessage = async (client: Client, event: WebhookEvent) => {
     // accept only text
     if (event.type !== 'message' || event.message.type !== 'text') return;
 

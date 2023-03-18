@@ -7,10 +7,10 @@ import logSymbols from 'log-symbols';
 
 /** @type {import('esbuild').BuildOptions} */
 const options = {
-    entryPoints: ["./src/service.ts"],
+    entryPoints: ["./src/index.ts"],
     minify: true,
     bundle: true,
-    outfile: "./dist/service/index.js",
+    outfile: "./dist/index.js",
     target: "node18",
     platform: "node",
     format: "cjs",

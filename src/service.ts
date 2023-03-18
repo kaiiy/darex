@@ -1,66 +1,119 @@
-import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
-import { validateSignature, WebhookEvent } from '@line/bot-sdk'
-import { createClient, isWebhookEvents, Key, Secrets } from './line';
-import { Targets, forbiddenResponse, OkResponse } from "./http"
-import { replyMessage as replyServiceMessage } from "./service/reply"
+import { Client, WebhookEvent } from '@line/bot-sdk'
+import { hints } from "./hints"
 
-const validateSignatureWithPath =
-    (body: string, secrets: Secrets, signature: string, path: string, targets: Targets): boolean => {
-        let secret: string;
-        if (path === targets.service) secret = secrets.service
-        else if (path === targets.reporter) secret = secrets.reporter
-        else return false
+const addFriendText = "追加した"
+const gameStartText = "ゲームスタート"
+const hintText = "ヒント"
+const resetText = "リセット"
+const answers = {
+    q1: ["レスラー", "れすらー"],
+    q2: ["ペケ", "ぺけ"]
+}
 
-        const verified = validateSignature(body, secret, signature)
-        return verified
-    }
+export const replyMessage = async (client: Client, reporter: Client, event: WebhookEvent) => {
+    const userId = event.source.userId
 
-
-export const handler = async (event: APIGatewayEvent, _: Context): Promise<ProxyResult> => {
-    // keys 
-    const serviceKey: Key = {
-        accessToken: process.env.SERVICE_ACCESS_TOKEN!,
-        channelSecret: process.env.SERVICE_SECRET!
-    }
-    const reporterKey: Key = {
-        accessToken: process.env.REPORTER_ACCESS_TOKEN!,
-        channelSecret: process.env.REPORTER_SECRET!
-    }
-
-    const targets: Readonly<Targets> = {
-        service: "/service",
-        reporter: "/reporter"
-    }
-
-    // create client 
-    const serviceClient = createClient(serviceKey.accessToken)
-    const reporterClient = createClient(reporterKey.accessToken)
-    const secrets = {
-        service: serviceKey.channelSecret,
-        reporter: reporterKey.channelSecret
-    }
-
-    // validate signature 
-    if (!event.body) return forbiddenResponse
-    const verified = validateSignatureWithPath(
-        event.body, secrets, event.headers["x-line-signature"]!, event.path, targets
-    )
-    if (!verified) return forbiddenResponse
-
-    // load request 
-    const lineEvents = JSON.parse(event.body).events
-    if (!isWebhookEvents(lineEvents)) return forbiddenResponse
-
-    // reply to all messages
-    await Promise.all(
-        lineEvents.map(async (webhookEvent: WebhookEvent) => {
-            if (event.path === targets.service) {
-                await replyServiceMessage(serviceClient, reporterClient, webhookEvent)
-            } else if (event.path === targets.reporter) {
-                // todo 
+    // when followed 
+    if (event.type === "follow" || (event.type === 'message' && event.message.type === 'text' && event.message.text === resetText)) {
+        await client.replyMessage(event.replyToken, [
+            {
+                type: "template",
+                altText: "アカウントを追加してください。",
+                template: {
+                    type: "buttons",
+                    title: "友達追加",
+                    text: "下のボタンからアカウントを追加してください。",
+                    actions: [
+                        {
+                            type: "uri",
+                            label: "追加する",
+                            uri: "https://line.me/R/ti/p/@152wmnqc"
+                        }
+                    ]
+                },
+                quickReply: {
+                    items: [
+                        {
+                            type: "action",
+                            action: {
+                                type: "message",
+                                label: addFriendText,
+                                text: addFriendText
+                            }
+                        }
+                    ]
+                }
             }
-        })
-    );
+        ]);
+    }
+    // accept only text
+    if (event.type !== 'message' || event.message.type !== 'text') return;
 
-    return OkResponse
-};
+    const userText = event.message.text;
+    if (userText === addFriendText) {
+        await client.replyMessage(event.replyToken, [
+            {
+                type: "text",
+                text: "このLINE謎『誰X』は、問題1・2のいずれかに正解できれば「クリア」となります。"
+            },
+            {
+                type: "text",
+                text: "ヒントが欲しい場合、「ヒント」と送信してください。ヒントの内容はランダムで送信されます。",
+            },
+            {
+                type: "text",
+                text: "「リセット」と送信すると、最初から遊ぶことが出来ます。",
+                quickReply: {
+                    items: [
+                        {
+                            type: "action",
+                            action: {
+                                type: "message",
+                                label: gameStartText,
+                                text: gameStartText
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
+    } else if (userText === gameStartText) {
+        await client.replyMessage(event.replyToken, [
+            {
+                type: "text",
+                text: "問題1: あなたは誰ですか?"
+            },
+            {
+                type: "text",
+                text: "問題2: x = ? (ただし、このLINE謎の存在なしに、x単体でも成立するものとします。)"
+            },
+        ]);
+
+        if (userId === undefined) {
+            await client.replyMessage(event.replyToken, [
+                {
+                    type: "text",
+                    text: "ユーザIDが取得できませんでした。iOS版LINEまたはAndroid版LINEを使用してください。"
+                },
+            ]);
+            return
+        }
+        await reporter.pushMessage(userId, [
+            {
+                type: "text",
+                text: "xxxですか?"
+            },
+        ])
+    } else if (userText === hintText) {
+        await client.replyMessage(event.replyToken,
+            hints[Math.floor(Math.random() * hints.length)]
+        )
+    } else if (answers.q1.includes(userText) || answers.q2.includes(userText)) {
+        await client.replyMessage(event.replyToken, [
+            {
+                type: "text",
+                text: "『誰X』クリア!!"
+            },
+        ]);
+    }
+}
