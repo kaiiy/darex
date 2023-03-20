@@ -24,25 +24,21 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
                     type: "buttons",
                     title: "友達追加",
                     text: "下のボタンからアカウントを追加してください。",
-                    actions: [
-                        {
-                            type: "uri",
-                            label: "追加する",
-                            uri: "https://line.me/R/ti/p/@152wmnqc"
-                        }
-                    ]
+                    actions: [{
+                        type: "uri",
+                        label: "追加する",
+                        uri: "https://line.me/R/ti/p/@152wmnqc"
+                    }]
                 },
                 quickReply: {
-                    items: [
-                        {
-                            type: "action",
-                            action: {
-                                type: "message",
-                                label: addFriendText,
-                                text: addFriendText
-                            }
+                    items: [{
+                        type: "action",
+                        action: {
+                            type: "message",
+                            label: addFriendText,
+                            text: addFriendText
                         }
-                    ]
+                    }]
                 }
             }
         ]);
@@ -55,7 +51,11 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
         await client.replyMessage(event.replyToken, [
             {
                 type: "text",
-                text: "このLINE謎『誰X』は、問題1・2のいずれかに正解できれば「クリア」となります。"
+                text: "このLINE謎『誰X』は、問題1・2のいずれかに正解できれば「クリア」となります。想定プレイ時間は5~10分です。"
+            },
+            {
+                type: "text",
+                text: "「ゲームスタート」と送信すると、先程、友達追加をした相手から \"質問\" をされますので、それに答えてください。"
             },
             {
                 type: "text",
@@ -65,16 +65,14 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
                 type: "text",
                 text: "「リセット」と送信すると、最初から遊ぶことが出来ます。",
                 quickReply: {
-                    items: [
-                        {
-                            type: "action",
-                            action: {
-                                type: "message",
-                                label: gameStartText,
-                                text: gameStartText
-                            }
+                    items: [{
+                        type: "action",
+                        action: {
+                            type: "message",
+                            label: gameStartText,
+                            text: gameStartText
                         }
-                    ]
+                    }]
                 }
             }
         ]);
@@ -88,16 +86,14 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
                 type: "text",
                 text: "問題2: x = ? (ただし、このLINE謎の存在なしに、x単体でも成立するものとします。)",
                 quickReply: {
-                    items: [
-                        {
-                            type: "action",
-                            action: {
-                                type: "message",
-                                label: cueText,
-                                text: cueText
-                            }
+                    items: [{
+                        type: "action",
+                        action: {
+                            type: "message",
+                            label: cueText,
+                            text: cueText
                         }
-                    ]
+                    }]
                 }
             },
         ]);
@@ -135,7 +131,13 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
             {
                 type: "text",
                 text: "『誰X』クリア!!"
-            },
+            }, {
+                type: "text",
+                text: "プレイしていただき、ありがとうございました!"
+            }, {
+                type: "text",
+                text: "おまけコンテンツとして、 『誰X』のソースコードを以下のURLで公開しています。興味のある方はご覧下さい。https://github.com/kaiiy/darex"
+            }
         ]);
     }
 }
