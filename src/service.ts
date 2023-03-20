@@ -136,7 +136,7 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
                 text: "プレイしていただき、ありがとうございました!"
             }, {
                 type: "text",
-                text: "おまけコンテンツとして、 『誰X』のソースコードを以下のURLにて公開しています。興味のある方はご覧下さい。https://github.com/kaiiy/darex"
+                text: "おまけコンテンツとして、 『誰X』のソースコードを以下のURLにて公開しています。興味のある方はご覧下さい。https://gitlab.com/kaiix/darex"
             }
         ]);
     }
