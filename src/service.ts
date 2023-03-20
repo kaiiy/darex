@@ -4,6 +4,7 @@ import { hints } from "./hints"
 const addFriendText = "追加した"
 const gameStartText = "ゲームスタート"
 const hintText = "ヒント"
+const cueText = "手がかり"
 const resetText = "リセット"
 const answers = {
     q1: ["レスラー", "れすらー"],
@@ -85,7 +86,19 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
             },
             {
                 type: "text",
-                text: "問題2: x = ? (ただし、このLINE謎の存在なしに、x単体でも成立するものとします。)"
+                text: "問題2: x = ? (ただし、このLINE謎の存在なしに、x単体でも成立するものとします。)",
+                quickReply: {
+                    items: [
+                        {
+                            type: "action",
+                            action: {
+                                type: "message",
+                                label: cueText,
+                                text: cueText
+                            }
+                        }
+                    ]
+                }
             },
         ]);
 
@@ -104,6 +117,15 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
                 text: "xxxですか?"
             },
         ])
+    } else if (userText === cueText) {
+        await client.replyMessage(event.replyToken, [
+            {
+                type: "audio",
+                originalContentUrl: "https://example.com/original.m4a", // todo 
+                duration: 6012
+            },
+        ]);
+        return
     } else if (userText === hintText) {
         await client.replyMessage(event.replyToken,
             hints[Math.floor(Math.random() * hints.length)]
