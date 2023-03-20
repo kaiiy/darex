@@ -117,7 +117,7 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
         await client.replyMessage(event.replyToken, [
             {
                 type: "audio",
-                originalContentUrl: "https://example.com/original.m4a", // todo 
+                originalContentUrl: "https://darex.s3.ap-northeast-1.amazonaws.com/cue.m4a",
                 duration: 6012
             },
         ]);
