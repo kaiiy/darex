@@ -117,7 +117,7 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
         await client.replyMessage(event.replyToken, [
             {
                 type: "audio",
-                originalContentUrl: "https://darex.s3.ap-northeast-1.amazonaws.com/cue.m4a",
+                originalContentUrl: "https://github.com/kaiiy/darex/raw/main/public/cue.m4a",
                 duration: 6012
             },
         ]);
@@ -136,7 +136,7 @@ export const replyMessage = async (client: Client, reporter: Client, event: Webh
                 text: "プレイしていただき、ありがとうございました!"
             }, {
                 type: "text",
-                text: "おまけコンテンツとして、 『誰X』のソースコードを以下のURLにて公開しています。興味のある方はご覧下さい。https://gitlab.com/kaiix/darex"
+                text: "おまけとして、 『誰X』のソースコードを以下のURLにて公開しています。https://github.com/kaiiy/darex"
             }
         ]);
     }
