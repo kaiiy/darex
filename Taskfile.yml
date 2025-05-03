@@ -3,7 +3,7 @@ version: 3
 silent: true
 
 vars:
-  SERVICE_FUNCTION_NAME: ""
+  SERVICE_FUNCTION_NAME: darex
 
 tasks:
   _zip:
@@ -21,6 +21,6 @@ tasks:
       LOG_NAME:
         sh: date --rfc-3339='seconds' | sed 's/\s/\_/' | sed 's/+/\_/' | sed 's/\:/-/g'
     cmds:
-      - task build
+      - task: build
       - mkdir -p ../log/
       - "aws lambda update-function-code --function-name {{ .SERVICE_FUNCTION_NAME }} --zip-file fileb://index.zip > ../log/{{ .LOG_NAME }}.json"

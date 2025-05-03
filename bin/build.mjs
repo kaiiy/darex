@@ -11,7 +11,7 @@ const options = {
     minify: true,
     bundle: true,
     outfile: "./dist/index.js",
-    target: "node18",
+    target: "node22",
     platform: "node",
     format: "cjs",
     sourcemap: true
